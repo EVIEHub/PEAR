@@ -1,153 +1,316 @@
-# IMAD
+# AR-MAD: Adaptive Routing Multi-Agent Debate
 
-This repo contains a minimal **LangGraph** implementation of **Itinerant Multi-Agent Debate (IMAD)**: a multi-agent debate protocol where the **communication topology is randomly shuffled each round** (i.e., agents are reassigned to network roles via a random permutation). The goal is to make debate outcomes less sensitive to arbitrary agent-role assignments (e.g., who becomes the hub in a star) and to improve stability and generalization.
+AR-MAD is an experiment harness for **Adaptive Routing Multi-Agent Debate**. It studies multi-agent reasoning systems where agents first produce independent answers and then revise them through sparse, dynamically routed critiques.
+
+The current method uses a two-phase debate loop:
+
+1. **Answer phase**: each agent proposes or updates an answer with a confidence score.
+2. **Critique phase**: each agent receives a fixed number of critiques from other agents. For `armad_full`, the routing graph is selected using state-aware signals rather than a fixed topology.
+
+The full AR-MAD routing objective combines three components:
+
+- **Targeted cross-answer routing**: prioritize high-confidence agents with different answers as sources for lower-confidence targets.
+- **Influence balancing**: avoid repeatedly over-exposing the group to one historically influential source.
+- **Low-confidence filtering**: reduce routing exposure from low-confidence sources.
+
+This repository includes fixed-topology baselines, CoT / CoT-SC baselines, random sparse routing controls, ablations, robustness experiments, local vLLM inference, and OpenAI-compatible closed-model inference.
 
 ---
 
-## What’s Included
+## Repository Structure
 
-- `imad_langgraph.py` — a runnable **LangGraph** skeleton that supports:
-  - **Fixed topology** (baseline)
-  - **IMAD uniform shuffling** (`imad_uniform`)
-  - **IMAD subgroup shuffling** (`imad_subgroup`)
-  - **Edge dropout** control (`edge_dropout`)
-  - A simple **majority vote** aggregator
-  - A stub LLM backend (so the graph runs without external APIs)
+The repository root is the source directory. `main.py` is the canonical CLI entry point, and each subdirectory is importable as a top-level package. Generated run directories and paper notes are intentionally not expanded here.
+
+```text
+AR-MAD/
+|- main.py                         # CLI entry point; loads YAML config and calls runner.run_experiment
+|- prompts.py                      # all LLM-facing prompt templates, confidence rubric, robustness prompts
+|- requirements.txt                # Python dependencies, including vLLM / transformers / API clients
+|- .env.example                    # template for API keys and OpenAI-compatible base URLs
+|- configs/                        # agents/debate/dataset/replication/logging settings
+|- core/
+|  |- state.py                     # shared debate state schema and mode/type definitions
+|  |- topology.py                  # topology construction, routing scores, random k-regular logic
+|  `- views.py                     # per-agent visibility/view helpers
+|- nodes/
+|  |- agent_runner.py              # calls LLM agents for initial answers and updates
+|  |- aggregator.py                # final answer aggregation, e.g. majority vote / judge
+|  |- scorer.py                    # example-level scoring node
+|  |- topology_scheduler.py        # topology/routing schedule helpers
+|  `- turn_scheduler.py            # turn order / round scheduling helpers
+|- graph/
+|  `- builder.py                   # LangGraph StateGraph construction for AR-MAD execution
+|- runner/
+|  `- experiment.py                # high-level experiment loop, condition sweeps, summaries, transcripts
+|- models/
+|  |- base.py                      # BaseLLM and Generation abstractions
+|  |- model.py                     # OpenAI-compatible, Anthropic, HF, and vLLM backend implementations
+|  |- factory.py                   # loads configs/models.yaml and instantiates the selected backend
+|- data/
+|  |- loaders.py                   # dataset loading utilities
+|  |- tasks.py                     # dataset adapters: formatting, answer parsing, scoring
+|  |- gsm8k/                       # GSM8K local JSON files
+|  |- mmlu_pro/                    # MMLU-Pro local JSON files
+|  |- math500/                     # MATH-500 local JSON files
+|  |- truthful_qa/                 # TruthfulQA local JSON files
+|- metrics/
+|  |- scorers.py                   # accuracy and task-level scoring helpers
+|  |- diagnostics.py               # W2R/R2W, routing, confidence, influence diagnostics
+|  `- stability.py                 # stability / tail-risk / influence-distribution metrics
+|- utils/
+|  |- budget.py                    # optional call/token budget accounting
+|  |- logging.py                   # run directory creation, logger setup, timestamp handling
+|  |- seed.py                      # reproducibility helpers
+|  `- tracing.py                   # JSONL trace writing
+|- scripts/
+`- analysis/
+```
 
 ---
 
 ## Installation
 
-Create a Python environment and install dependencies:
+The project can be run with a regular Python environment, but local open-model experiments should use a dedicated vLLM environment. The scripts default to `.venv-vllm/bin/python`.
+
+### Create the vLLM environment
+
+Using `uv`:
 
 ```bash
-pip install langgraph langchain-core
-# Optional if you plan to use OpenAI via LangChain:
-pip install langchain-openai
+uv venv .venv-vllm --python 3.12
+source .venv-vllm/bin/activate
+uv pip install -r requirements.txt
 ```
 
-> The included code uses a **stubbed LLM** by default, so it runs offline. If you want to plug in a real model, see “Using a real LLM backend”.
+Or using standard `venv` / `pip`:
+
+```bash
+python3.12 -m venv .venv-vllm
+source .venv-vllm/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+
+For closed-source or OpenAI-compatible APIs, create `.env` from the template:
+
+```bash
+cp .env.example .env
+# Fill OPENAI_API_KEY / OPENAI_BASE_URL as needed.
+```
+
+
 
 ---
 
 ## Quickstart
 
-Run the demo example:
+Run the default config:
 
 ```bash
-python imad_langgraph.py
+python main.py --config configs/default.yaml
 ```
 
-You should see output like:
-- Final `Decision`
-- Per-agent `Candidates`
-- Number of trace events recorded
+Override common fields from the CLI:
 
----
+```bash
+python main.py \
+  --config configs/main_large.yaml \
+  --model qwen2.5-7b-vllm \
+  --dataset mmlu_pro \
+  --num-examples 50
+```
 
-## How It Works (High-Level)
+Run with explicit seeds:
 
-### Role graph vs agent graph
-- You define a **base topology** as a *role graph* (e.g., star where “role 1” is hub).
-- Each round, IMAD samples a permutation `perm` mapping roles → agents.
-- The permuted role graph induces an **agent-space topology** (who sees whom).
+```bash
+python main.py \
+  --config configs/main_large.yaml \
+  --seeds 1 2 3 \
+  --perm-seeds 10
+```
 
-### Topology-aware visibility
-Each agent only sees messages from its **incoming neighbors** (plus itself). This is enforced by filtering the transcript with `agent_view(...)`.
+Run the parameterized vLLM shell entry point:
 
-### Debate execution
-The graph runs:
-- `R` rounds
-- `T` turns per round (speakers scheduled round-robin)
-- After the final round, an aggregator selects an answer.
+```bash
+scripts/run_vllm.sh qwen7b
+scripts/run_vllm.sh llama
+scripts/run_vllm.sh gemma
+scripts/run_vllm.sh qwen3
+scripts/run_vllm.sh open4
+```
+
+Useful shell overrides:
+
+```bash
+VLLM_DATASETS="gsm8k mmlu_pro" \
+VLLM_NUM_EXAMPLES=200 \
+ARMAD_SEEDS="1 2 3" \
+ARMAD_PERM_SEEDS="10" \
+scripts/run_vllm.sh qwen7b
+```
+
+Backward-compatible wrappers are also kept:
+
+```bash
+scripts/run_qwen_vllm.sh
+scripts/run_llama_vllm.sh
+scripts/run_gemma_vllm.sh
+scripts/run_qwen3_main_vllm.sh
+```
 
 ---
 
 ## Configuration
 
-In `run_one(...)`, the key knobs are:
+`configs/default.yaml` contains the main knobs. Important fields:
 
-- `n_agents`: number of agents
-- `rounds`: number of rounds
-- `turns_per_round`: number of turns per round
-- `base_topology`: `clique | star | ring | random_sparse`
-- `mode`:
-  - `fixed`: no shuffling
-  - `imad_uniform`: per-round uniform permutation
-  - `imad_subgroup`: permute within blocks (toy example)
-  - `edge_dropout`: control baseline with random edge removal
-- `agg_mode`: currently `majority_vote` (LLM judge is stubbed)
-- `seed`: controls randomness (permutations + stub outputs)
+```yaml
+agents:
+  model: qwen2.5-7b-vllm
 
-Example:
+debate:
+  n_agents: 5
+  rounds: 3
+  base_topology: k_regular
+  k_regular_degree: 2
+  mode: armad_full
+  agg_mode: majority_vote
+  max_tokens_per_call: 512
+  mc_permutations: 100
+  routing_temperature: 0.7
+  alpha_targeted_cross: 0.2
+  alpha_influence: 0.7
+  alpha_low_confidence: 0.7
+  normalize_routing_terms: true
+  low_confidence_threshold: 3
+  targeted_cross_source_confidence_min: 4
+  targeted_cross_target_confidence_max: 3
+  influence_beta: 0.6
 
-```python
-from imad_langgraph import run_one
+dataset:
+  name: mmlu_pro
+  num_examples: 100
 
-st = run_one(
-    "Which option is correct? A) 1+1=2 B) 1+1=3 C) 1+1=4 D) 1+1=5",
-    n_agents=4,
-    rounds=2,
-    turns_per_round=6,
-    mode="imad_uniform",
-    base_topology="star",
-    seed=42,
-)
-print(st["decision"])
+replication:
+  seeds: [0]
+  agent_perm_seeds: [10]
 ```
+
+`configs/main_large.yaml` defines the main comparison conditions:
+
+| condition | meaning |
+|---|---|
+| `cot` | single-agent chain-of-thought baseline |
+| `cot_sc` | self-consistency over multiple independent agents/samples |
+| `fixed_clique` | fixed fully connected debate |
+| `fixed_star` | fixed hub-and-spoke debate |
+| `fixed_chain` | fixed sequential chain debate |
+| `fixed_ring` | fixed local-neighbor ring debate |
+| `random_k_regular` | random sparse k-regular routing baseline |
+| `armad_full` | full adaptive routing method |
+
+`configs/ablation.yaml` isolates AR-MAD routing components:
+
+| condition | targeted cross | influence balancing | low-confidence filtering |
+|---|---:|---:|---:|
+| `armad_targeted_cross` | yes | no | no |
+| `armad_influence` | no | yes | no |
+| `armad_low_confidence` | no | no | yes |
+| `armad_targeted_influence` | yes | yes | no |
+| `armad_targeted_low_confidence` | yes | no | yes |
+| `armad_influence_low_confidence` | no | yes | yes |
+| `armad_full` | yes | yes | yes |
 
 ---
 
-## Using a Real LLM Backend (Optional)
+## Datasets
 
-The code currently uses a stubbed backend (`make_stub_llm(seed)`), which returns deterministic-ish A/B/C/D outputs.
+All datasets are loaded from local JSON files under `data/`; the runner does not download data at runtime.
 
-To use a real model, implement a backend with signature:
+| name | source files | answer format |
+|---|---|---|
+| `mmlu_pro` | `data/mmlu_pro/{test,validation}.json` | A-J multiple choice |
+| `gsm8k` | `data/gsm8k/{test,train}.json` | numeric exact match |
+| `truthful_qa` | `data/truthful_qa/mc_task.json` | multiple choice letter |
+| `math_500` | `data/math500/test.json` | math answer exact match |
 
-```python
-generate(agent_id: int, prompt: str) -> str
-```
+`data/tasks.py` normalizes each dataset into a shared `Example` format and provides benchmark-specific `format_question`, `parse_answer`, and `score` methods.
 
-and pass it into the agent node factory.
+---
 
-If using LangChain OpenAI:
+## Models
+
+Models are registered in `configs/models.yaml`. Each entry is selected by `agents.model` or `--model`.
+
+Common local vLLM entries include:
+
+| model key | backend |
+|---|---|
+| `qwen2.5-7b-vllm` | vLLM |
+| `llama-3.1-8b-vllm` | vLLM |
+| `gemma-3-12b-vllm` | vLLM |
+| `qwen2.5-14b-vllm` | vLLM |
+| `qwen3-30b-a3b-local-vllm` | vLLM |
+
+Closed / API models can use the OpenAI-compatible backend through `OPENAI_API_KEY` and `OPENAI_BASE_URL`.
+
+---
+
+## Running Experiments
+
+Main open-model experiment:
 
 ```bash
-pip install langchain-openai
-export OPENAI_API_KEY="..."
+scripts/run_main_large_vllm.sh all
 ```
 
-Then implement a `make_openai_llm()` wrapper (adapt to your model/provider).
+Parameterized vLLM runner:
 
----
+```bash
+scripts/run_vllm.sh qwen7b llama gemma qwen3
+```
 
-## Logging & Tracing
+Routing ablation:
 
-The state records:
-- `messages`: transcript entries `{speaker, round, turn, content}`
-- `final_candidates`: per-agent parsed answer tokens
-- `metrics_trace`: event log of:
-  - topology selection per round (`perm`)
-  - each message event (speaker/turn)
-  - aggregation event (final decision)
+```bash
+scripts/run_ablation_vllm.sh all
+```
 
-This is designed for:
-- correctness scoring (offline)
-- stability measurements (variance across permutations/seeds)
-- protocol diagnostics (answer flips, consensus formation)
+Random k-regular baseline:
 
----
+```bash
+scripts/run_random_k_regular_vllm.sh open4
+```
 
-## Recommended Extensions (for real experiments)
 
-1. Add an **LLM judge** aggregator.
-2. Add a dataset runner + JSONL logging.
-3. Enforce strict token budgets and fail fast on budget violations.
-4. Add ablation controls (schedule shuffle only, role shuffle only, edge dropout).
-5. Add stability metrics (`Δ_perm`, hub advantage, variance across seeds).
+Closed-model main experiment:
+
+```bash
+scripts/run_closed_main.sh gpt
+scripts/run_closed_main.sh claude
+```
+
+
+## Metrics
+
+The primary metric is accuracy. The code also records diagnostics that are useful for understanding debate dynamics:
+
+| metric | meaning |
+|---|---|
+| `accuracy` | final answer correctness |
+| `w2r_rate` | wrong-to-right answer transition rate |
+| `r2w_rate` | right-to-wrong answer transition rate |
+| `answer_entropy` | diversity of agent answers |
+| `influence_entropy` | concentration or balance of influence |
+| `targeted_cross_rate` | frequency of targeted high-confidence dissent routing |
+| `critique_acceptance_rate` | how often critiques are adopted |
+
+Analysis scripts live in `analysis/` and generated figures/reports should be written under `analysis/figures/` or dedicated report subfolders.
+
 
 ---
 
 ## License
 
-Add your intended license here (MIT/Apache-2.0/etc.).
+See `LICENSE`.
