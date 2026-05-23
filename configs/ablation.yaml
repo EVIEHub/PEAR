@@ -1,0 +1,70 @@
+extends: default.yaml
+
+# Factorial routing ablation for AR-MAD.
+#
+# Factors:
+# - targeted_cross: route high-confidence dissenting sources to low-confidence targets.
+# - influence: reduce exposure from previously influential agents.
+# - low_confidence: reduce exposure from source agents with confidence <= 3.
+#
+# Baselines:
+# - fixed_clique: previous strong dense-graph baseline.
+# - fixed_k_regular: same sparse base graph as AR-MAD, without per-round routing.
+# - armad_uniform: same sparse base graph with random per-round permutation,
+#   but no state-aware objective.
+
+debate:
+  mode: armad_full
+  base_topology: k_regular
+  k_regular_degree: 3
+  alpha_targeted_cross: 0.5
+  alpha_influence: 0.7
+  alpha_low_confidence: 0.7
+  normalize_routing_terms: true
+  low_confidence_threshold: 3
+  targeted_cross_source_confidence_min: 4
+  targeted_cross_target_confidence_max: 3
+
+conditions:
+
+  - name: armad_targeted_cross
+    debate:
+      mode: armad_targeted_cross
+      base_topology: k_regular
+      k_regular_degree: 3
+
+  - name: armad_influence
+    debate:
+      mode: armad_influence
+      base_topology: k_regular
+      k_regular_degree: 3
+
+  - name: armad_low_confidence
+    debate:
+      mode: armad_low_confidence
+      base_topology: k_regular
+      k_regular_degree: 3
+
+  - name: armad_targeted_influence
+    debate:
+      mode: armad_targeted_influence
+      base_topology: k_regular
+      k_regular_degree: 3
+
+  - name: armad_targeted_low_confidence
+    debate:
+      mode: armad_targeted_low_confidence
+      base_topology: k_regular
+      k_regular_degree: 3
+
+  - name: armad_influence_low_confidence
+    debate:
+      mode: armad_influence_low_confidence
+      base_topology: k_regular
+      k_regular_degree: 3
+
+  - name: armad_full
+    debate:
+      mode: armad_full
+      base_topology: k_regular
+      k_regular_degree: 3

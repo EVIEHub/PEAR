@@ -1,0 +1,22 @@
+extends: default.yaml
+
+# Random-answer baseline. This condition does not call an LLM; it only uses the
+# task answer space and the replication seeds.
+
+debate:
+  mode: random
+  n_agents: 1
+  rounds: 0
+  base_topology: clique
+  k_regular_degree: 0
+
+conditions:
+  - name: random
+    debate:
+      mode: random
+      n_agents: 1
+      rounds: 0
+      base_topology: clique
+
+runner:
+  show_progress: true

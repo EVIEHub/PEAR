@@ -1,0 +1,73 @@
+# Default debate / experiment settings. Every key below can be overridden
+# from the CLI flags exposed by main.py.
+
+agents:
+  model: qwen2.5-7b-vllm # Name of an entry in configs/models.yaml.
+  # judge_model: claude-3-5-haiku   # Optional separate LLM for agg_mode=llm_judge.
+
+debate:
+  n_agents: 5              # Number of agents in the debate.
+  rounds: 3                # Number of two-phase debate rounds (R).
+  base_topology: k_regular # clique | k_regular | ring | star | chain
+  k_regular_degree: 2      # Incoming critiques per agent for k_regular.
+  mode: armad_full          # cot | cot_sc | fixed | armad_full
+  agg_mode: majority_vote  # majority_vote | llm_judge
+  max_tokens_per_call: 512
+  mc_permutations: 100
+  routing_temperature: 0.7
+  alpha_targeted_cross: 0.2   # High-confidence dissenting source -> low-confidence target.
+  alpha_influence: 0.7        # Penalize exposure from historically influential sources.
+  alpha_low_confidence: 0.7   # Penalize routing exposure from low-confidence sources.
+  normalize_routing_terms: true
+  low_confidence_threshold: 3 # Confidence <= 3 is treated as low-confidence.
+  targeted_cross_source_confidence_min: 4
+  targeted_cross_target_confidence_max: 3
+  influence_beta: 0.6
+
+dataset:
+  name: mmlu_pro              # mmlu_pro | truthful_qa | gsm8k | math_500
+  # split is optional. When omitted the Task picks its default split
+  # (test for mmlu_pro / gsm8k / math_500, validation for truthful_qa).
+  # split: test
+  num_examples: 100         # Cap for compute-light runs; 0 means "use all".
+
+conditions:
+  - name: cot
+    debate:
+      mode: cot
+      n_agents: 1
+      rounds: 0
+      base_topology: clique
+  - name: cot_sc
+    debate:
+      mode: cot_sc
+      n_agents: 6
+      rounds: 0
+      base_topology: clique
+  - name: fixed_clique
+    debate:
+      mode: fixed
+      base_topology: clique
+  - name: armad_full
+    debate:
+      mode: armad_full
+      base_topology: k_regular
+      k_regular_degree: 3
+
+replication:
+  # seeds: [0, 1, 2, 3, 4]                # Decoding seeds.
+  # agent_perm_seeds: [10, 11, 12, 13, 14] # Independent seeds for agent relabelings.
+  seeds: [0]
+  agent_perm_seeds: [10]
+
+paths:
+  data_dir: data           # Local dataset root (data/<name>/<split>.json).
+  output_dir: outputs      # Run logs are written under outputs/exp_<timestamp>/<timestamp>_<tag>/.
+
+logging:
+  level: INFO              # DEBUG | INFO | WARNING | ERROR
+  console: true
+  jsonl: true              # Emit per-event JSONL trace (recommended).
+
+runner:
+  show_progress: true      # Show tqdm progress bars in the terminal.

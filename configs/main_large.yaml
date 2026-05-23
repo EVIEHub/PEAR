@@ -1,0 +1,60 @@
+extends: default.yaml
+
+# Main large-sample experiment.
+#
+# This keeps the primary baselines and adds fixed-topology controls so AR-MAD can
+# be compared against both dense and sparse static communication graphs.
+
+debate:
+  n_agents: 4
+  rounds: 2
+  base_topology: k_regular
+  k_regular_degree: 2
+  mc_permutations: 24
+
+conditions:
+  - name: cot
+    debate:
+      mode: cot
+      n_agents: 1
+      rounds: 0
+      base_topology: clique
+
+  - name: cot_sc
+    debate:
+      mode: cot_sc
+      n_agents: 4
+      rounds: 0
+      base_topology: clique
+
+  - name: fixed_clique
+    debate:
+      mode: fixed
+      base_topology: clique
+
+  - name: fixed_star
+    debate:
+      mode: fixed
+      base_topology: star
+
+  - name: fixed_chain
+    debate:
+      mode: fixed
+      base_topology: chain
+
+  - name: fixed_ring
+    debate:
+      mode: fixed
+      base_topology: ring
+
+  - name: random_k_regular
+    debate:
+      mode: random_k_regular
+      base_topology: k_regular
+      k_regular_degree: 2
+
+  - name: armad_full
+    debate:
+      mode: armad_full
+      base_topology: k_regular
+      k_regular_degree: 2

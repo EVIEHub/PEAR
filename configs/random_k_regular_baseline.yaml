@@ -1,0 +1,24 @@
+extends: default.yaml
+
+# Random k-regular communication baseline.
+# Agents still run the normal two-phase MAD loop, but each round each target
+# samples k random source agents independently of confidence/influence/state.
+
+debate:
+  n_agents: 4
+  rounds: 2
+  base_topology: k_regular
+  k_regular_degree: 2
+  mode: random_k_regular
+  agg_mode: majority_vote
+  mc_permutations: 1
+
+conditions:
+  - name: random_k_regular
+    debate:
+      mode: random_k_regular
+      base_topology: k_regular
+      k_regular_degree: 2
+
+runner:
+  show_progress: true

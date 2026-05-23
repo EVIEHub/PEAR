@@ -1,0 +1,125 @@
+# Model registry.
+#
+# Each entry under "models" describes one LLM that the experiment runner can
+# instantiate via armad.models.factory.build_llm. The "provider" field selects
+# the backend; everything else is forwarded as keyword arguments.
+#
+# Closed-source providers expect an API key in the .env file (see .env.example).
+# Open-source providers run locally and require the optional "open" extras.
+#
+# The author can pick which entry to use by name from a CLI flag or an
+# experiment YAML (e.g.  agents.model: gpt-5.5).
+
+models:
+  
+  # Closed-source
+  gpt-5.4-nano-2026-03-17:
+    provider: openai
+    model: gpt-5.4-nano-2026-03-17
+    temperature: 0.2
+    max_tokens: 512
+    max_tokens_param: max_completion_tokens
+
+  claude-haiku-4-5:
+    provider: openai
+    model: claude-haiku-4-5
+    temperature: 0.2
+    max_tokens: 512
+
+
+  # vLLM-backed local inference.
+  # Use these with scripts/run_*_vllm.sh and the dedicated .venv-vllm env.
+  llama-3.1-8b-vllm:
+    provider: vllm
+    model: /home/dev/hf_cache/imad_models/models--meta-llama--Llama-3.1-8B-Instruct/snapshots/0e9e39f249a16976918f6564b8830bc894c89659
+    dtype: bfloat16
+    tensor_parallel_size: 1
+    gpu_memory_utilization: 0.90
+    max_model_len: 8192
+    trust_remote_code: false
+    enforce_eager: true
+    temperature: 0.2
+    max_tokens: 512
+
+  qwen2.5-7b-vllm:
+    provider: vllm
+    model: /home/dev/hf_cache/imad_models/models--Qwen--Qwen2.5-7B-Instruct/snapshots/a09a35458c702b33eeacc393d103063234e8bc28
+    dtype: bfloat16
+    tensor_parallel_size: 1
+    gpu_memory_utilization: 0.90
+    max_model_len: 8192
+    trust_remote_code: false
+    enforce_eager: true
+    temperature: 0.2
+    max_tokens: 512
+
+  qwen2.5-14b-vllm:
+    provider: vllm
+    model: /home/dev/hf_cache/imad_models/models--Qwen--Qwen2.5-14B-Instruct/snapshots/cf98f3b3bbb457ad9e2bb7baf9a0125b6b88caa8
+    dtype: bfloat16
+    tensor_parallel_size: 1
+    gpu_memory_utilization: 0.90
+    max_model_len: 8192
+    trust_remote_code: false
+    enforce_eager: true
+    temperature: 0.2
+    max_tokens: 512
+
+  gemma-3-12b-vllm:
+    provider: vllm
+    model: /home/dev/hf_cache/imad_models/models--google--gemma-3-12b-it/snapshots/96b6f1eccf38110c56df3a15bffe176da04bfd80
+    dtype: bfloat16
+    tensor_parallel_size: 1
+    gpu_memory_utilization: 0.90
+    max_model_len: 8192
+    trust_remote_code: false
+    enforce_eager: true
+    temperature: 0.2
+    max_tokens: 512
+
+  llama-3.3-70b-vllm:
+    provider: vllm
+    model: meta-llama/Llama-3.3-70B-Instruct
+    dtype: bfloat16
+    tensor_parallel_size: 2
+    gpu_memory_utilization: 0.97
+    max_model_len: 4096
+    trust_remote_code: false
+    enforce_eager: true
+    temperature: 0.2
+    max_tokens: 256
+
+  qwen3-30b-a3b-vllm:
+    provider: vllm
+    model: Qwen/Qwen3-30B-A3B-Instruct-2507
+    dtype: bfloat16
+    tensor_parallel_size: 1
+    gpu_memory_utilization: 0.90
+    max_model_len: 4096
+    trust_remote_code: false
+    temperature: 0.2
+    max_tokens: 256
+
+  qwen3-30b-a3b-local-vllm:
+    provider: vllm
+    model: /home/dev/hf_cache/imad_models/models--Qwen--Qwen3-30B-A3B-Instruct-2507/snapshots/0d7cf23991f47feeb3a57ecb4c9cee8ea4a17bfe
+    dtype: bfloat16
+    tensor_parallel_size: 1
+    gpu_memory_utilization: 0.90
+    max_model_len: 4096
+    trust_remote_code: false
+    enforce_eager: true
+    temperature: 0.2
+    max_tokens: 512
+
+  gemma-3-27b-vllm:
+    provider: vllm
+    model: google/gemma-3-27b-it
+    dtype: bfloat16
+    tensor_parallel_size: 1
+    gpu_memory_utilization: 0.97
+    max_model_len: 4096
+    trust_remote_code: false
+    enforce_eager: true
+    temperature: 0.2
+    max_tokens: 256
