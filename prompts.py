@@ -176,7 +176,7 @@ Two visible streams are passed in as separate placeholders:
   under the active round's topology (the second component of Eq. 9).
 
 The ``{topology_info}`` block tells the agent who it can hear from and who
-will hear it this turn, so that under AR-MAD's per-round shuffle the agent
+will hear it this turn, so that under PEAR's per-round shuffle the agent
 can register that the neighbour set just changed."""
 
 
