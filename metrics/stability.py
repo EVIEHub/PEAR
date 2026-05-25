@@ -15,7 +15,7 @@ Implemented metrics
 * :func:`position_role_gap` -- generalisation of :func:`hub_advantage` to
   any structural-role taxonomy (first speaker, ring index, ...).
 * :func:`worst_case`, :func:`percentile` -- tail-risk summaries that
-  complement the mean (AR-MAD typically wins on tails even when means tie).
+  complement the mean (PEAR typically wins on tails even when means tie).
 * :func:`outcome_invariance` -- agreement between paired runs that only
   differ in an agent-ID relabelling (permutation-equivariance probe).
 * :func:`poisoning_drop` -- accuracy drop after injecting a
@@ -108,7 +108,7 @@ def bootstrap_ci(
     return (_quantile(means, lo_q), _quantile(means, hi_q))
 
 
-# AR-MAD-specific stability metrics
+# PEAR-specific stability metrics
 def delta_perm(
     scores_by_perm: Mapping[Tuple[int, ...], float],
     identity: Tuple[int, ...] | None = None,
@@ -157,7 +157,7 @@ def hub_advantage(
     -------
     float
         ``max(scores) - min(scores)``. A *small* number indicates that
-        AR-MAD has flattened the hub bias.
+        PEAR has flattened the hub bias.
     """
     if not scores_by_hub:
         return float("nan")
@@ -174,7 +174,7 @@ def position_role_gap(
     / ``"last_speaker"`` for chains, ring indices, or tuples encoding
     composite roles. The metric is again ``max - min``: small values mean
     the method is approximately invariant to which agent occupies which
-    structural position, which is the symmetry property AR-MAD targets.
+    structural position, which is the symmetry property PEAR targets.
     """
     if not scores_by_role:
         return float("nan")
@@ -187,8 +187,8 @@ def worst_case(scores: Iterable[float]) -> float:
     """Minimum score across runs (lower bound under unfavourable draws).
 
     For a fixed-topology MAD baseline this corresponds to the unluckiest
-    permutation; for AR-MAD it is the worst stochastic run. Reporting both
-    next to the mean is the cleanest way to surface AR-MAD's tail-robustness
+    permutation; for PEAR it is the worst stochastic run. Reporting both
+    next to the mean is the cleanest way to surface PEAR's tail-robustness
     advantage when means are roughly comparable.
     """
     values = [float(s) for s in scores]
@@ -220,7 +220,7 @@ def outcome_invariance(
 
     The intended pairing is "same example, same seed, but agent IDs are
     relabelled by some permutation between run A and run B". A
-    permutation-equivariant method (AR-MAD in expectation) will match on
+    permutation-equivariant method (PEAR in expectation) will match on
     every pair (returns 1.0); a fixed-topology method whose decision
     depends on positional roles will diverge whenever the relabelling
     moves an influential role onto a different agent.
@@ -240,7 +240,7 @@ def poisoning_drop(acc_clean: float, acc_poisoned: float) -> float:
     is the accuracy when one agent is forced to argue for a wrong answer
     (typically while occupying the most privileged role: hub in a star,
     first speaker in a chain, ...). A *small* drop means the method
-    tolerates an adversarial peer well -- AR-MAD should drop less because
+    tolerates an adversarial peer well -- PEAR should drop less because
     rotation prevents the bad agent from monopolising any role.
 
     Reported as ``acc_clean - acc_poisoned`` so larger values mean *worse*
@@ -257,7 +257,7 @@ def early_anchor_rate(
     """Fraction of runs whose final decision matches the turn-1 majority.
 
     A high value indicates that whoever spoke first effectively decided the
-    outcome (anchoring / cascade). AR-MAD's per-round shuffle is supposed to
+    outcome (anchoring / cascade). PEAR's per-round shuffle is supposed to
     re-route influence through later rounds, so its anchor rate should be
     materially lower than fixed-topology MAD on the same problem.
 
@@ -286,7 +286,7 @@ def diversity_curve(
     all empty / ``None`` contribute 0.0.
 
     Use this to plot how quickly the agents collapse onto a single answer.
-    Fixed-topology debate often collapses by round 2; healthy AR-MAD runs
+    Fixed-topology debate often collapses by round 2; healthy PEAR runs
     should hold non-zero entropy for one or two extra rounds before
     converging, which is empirical evidence that shuffling delays
     premature consensus.
@@ -317,7 +317,7 @@ def influence_gini(per_agent_hits: Mapping[int, float]) -> float:
 
     A Gini of 0 means every agent contributes equally; values near 1 mean
     a single agent monopolises the outcome -- the latter is exactly the
-    ``hub`` / ``first-speaker`` failure mode that AR-MAD is supposed to
+    ``hub`` / ``first-speaker`` failure mode that PEAR is supposed to
     flatten. Returns NaN on empty input and 0.0 if the sum of hits is 0.
     """
     values = sorted(float(v) for v in per_agent_hits.values())

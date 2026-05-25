@@ -1,4 +1,4 @@
-"""Scoring and ExpPlan_v3 diagnostic metrics for AR-MAD experiments."""
+"""Scoring and ExpPlan_v3 diagnostic metrics for PEAR experiments."""
 
 from metrics.diagnostics import (
     aggregate_diagnostics,

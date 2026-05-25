@@ -1,4 +1,4 @@
-"""ExpPlan_v3 diagnostic metrics for two-phase AR-MAD debates."""
+"""ExpPlan_v3 diagnostic metrics for two-phase PEAR debates."""
 
 from __future__ import annotations
 
