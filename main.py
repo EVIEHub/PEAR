@@ -1,6 +1,6 @@
-"""Project entry point for AR-MAD experiments.
+"""Project entry point for PEAR experiments.
 
-This script is the single canonical CLI for the AR-MAD harness. It parses
+This script is the single canonical CLI for the PEAR harness. It parses
 command-line flags, optionally overrides a few common config knobs, and
 hands off to :func:`runner.experiment.run_experiment` which does the heavy
 lifting (timestamped output directory, JSONL trace, summary aggregation).
@@ -54,9 +54,9 @@ def _build_parser() -> argparse.ArgumentParser:
     CLI surface without invoking the runner.
     """
     parser = argparse.ArgumentParser(
-        prog="armad",
+        prog="pear",
         description=(
-            "Run an AR-MAD multi-agent debate experiment from a YAML config. "
+            "Run an PEAR multi-agent debate experiment from a YAML config. "
             "Outputs are written to a timestamped directory under the path "
             "named in the config."
         ),
@@ -100,7 +100,7 @@ def _build_parser() -> argparse.ArgumentParser:
             "cot",
             "cot_sc",
             "fixed",
-            "armad_full",
+            "pear_full",
             "random",
             "random_k_regular",
         ],
