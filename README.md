@@ -1,13 +1,13 @@
-# AR-MAD: Adaptive Routing Multi-Agent Debate
+# PEAR: Permutation-Equivariant Adaptive Routing Multi-Agent Debate
 
-AR-MAD is an experiment harness for **Adaptive Routing Multi-Agent Debate**. It studies multi-agent reasoning systems where agents first produce independent answers and then revise them through sparse, dynamically routed critiques.
+PEAR is an experiment harness for **Permutation-Equivariant Adaptive Routing Multi-Agent Debate**. It studies multi-agent reasoning systems where agents first produce independent answers and then revise them through sparse, dynamically routed critiques.
 
 The current method uses a two-phase debate loop:
 
 1. **Answer phase**: each agent proposes or updates an answer with a confidence score.
-2. **Critique phase**: each agent receives a fixed number of critiques from other agents. For `armad_full`, the routing graph is selected using state-aware signals rather than a fixed topology.
+2. **Critique phase**: each agent receives a fixed number of critiques from other agents. For `pear_full`, the routing graph is selected using state-aware signals rather than a fixed topology.
 
-The full AR-MAD routing objective combines three components:
+The full PEAR routing objective combines three components:
 
 - **Targeted cross-answer routing**: prioritize high-confidence agents with different answers as sources for lower-confidence targets.
 - **Influence balancing**: avoid repeatedly over-exposing the group to one historically influential source.
@@ -22,7 +22,7 @@ This repository includes fixed-topology baselines, CoT / CoT-SC baselines, rando
 The repository root is the source directory. `main.py` is the canonical CLI entry point, and each subdirectory is importable as a top-level package. Generated run directories and paper notes are intentionally not expanded here.
 
 ```text
-AR-MAD/
+PEAR/
 |- main.py                         # CLI entry point; loads YAML config and calls runner.run_experiment
 |- prompts.py                      # all LLM-facing prompt templates, confidence rubric, robustness prompts
 |- requirements.txt                # Python dependencies, including vLLM / transformers / API clients
@@ -39,7 +39,7 @@ AR-MAD/
 |  |- topology_scheduler.py        # topology/routing schedule helpers
 |  `- turn_scheduler.py            # turn order / round scheduling helpers
 |- graph/
-|  `- builder.py                   # LangGraph StateGraph construction for AR-MAD execution
+|  `- builder.py                   # LangGraph StateGraph construction for PEAR execution
 |- runner/
 |  `- experiment.py                # high-level experiment loop, condition sweeps, summaries, transcripts
 |- models/
@@ -145,8 +145,8 @@ Useful shell overrides:
 ```bash
 VLLM_DATASETS="gsm8k mmlu_pro" \
 VLLM_NUM_EXAMPLES=200 \
-ARMAD_SEEDS="1 2 3" \
-ARMAD_PERM_SEEDS="10" \
+PEAR_SEEDS="1 2 3" \
+PEAR_PERM_SEEDS="10" \
 scripts/run_vllm.sh qwen7b
 ```
 
@@ -174,7 +174,7 @@ debate:
   rounds: 3
   base_topology: k_regular
   k_regular_degree: 2
-  mode: armad_full
+  mode: pear_full
   agg_mode: majority_vote
   max_tokens_per_call: 512
   mc_permutations: 100
@@ -208,19 +208,19 @@ replication:
 | `fixed_chain` | fixed sequential chain debate |
 | `fixed_ring` | fixed local-neighbor ring debate |
 | `random_k_regular` | random sparse k-regular routing baseline |
-| `armad_full` | full adaptive routing method |
+| `pear_full` | full adaptive routing method |
 
-`configs/ablation.yaml` isolates AR-MAD routing components:
+`configs/ablation.yaml` isolates PEAR routing components:
 
 | condition | targeted cross | influence balancing | low-confidence filtering |
 |---|---:|---:|---:|
-| `armad_targeted_cross` | yes | no | no |
-| `armad_influence` | no | yes | no |
-| `armad_low_confidence` | no | no | yes |
-| `armad_targeted_influence` | yes | yes | no |
-| `armad_targeted_low_confidence` | yes | no | yes |
-| `armad_influence_low_confidence` | no | yes | yes |
-| `armad_full` | yes | yes | yes |
+| `pear_targeted_cross` | yes | no | no |
+| `pear_influence` | no | yes | no |
+| `pear_low_confidence` | no | no | yes |
+| `pear_targeted_influence` | yes | yes | no |
+| `pear_targeted_low_confidence` | yes | no | yes |
+| `pear_influence_low_confidence` | no | yes | yes |
+| `pear_full` | yes | yes | yes |
 
 ---
 
