@@ -109,7 +109,7 @@ def setup_run_logging(
         Parent directory under which the run directory is created.
     tag:
         Optional short slug appended to the timestamp (e.g.
-        ``"gsm8k_armad_star"``). Sanitised to ``[A-Za-z0-9_-]``.
+        ``"gsm8k_pear_star"``). Sanitised to ``[A-Za-z0-9_-]``.
     level:
         Log level for the root logger. Strings like ``"DEBUG"`` or numeric
         levels are both accepted.
@@ -123,8 +123,8 @@ def setup_run_logging(
     """
     run_timestamp = _uk_timestamp()
     output_root = Path(output_root)
-    if output_root.name == "outputs" and os.environ.get("ARMAD_DISABLE_EXP_SUBDIR") != "1":
-        exp_timestamp = os.environ.get("ARMAD_EXP_TIMESTAMP") or run_timestamp
+    if output_root.name == "outputs" and os.environ.get("PEAR_DISABLE_EXP_SUBDIR") != "1":
+        exp_timestamp = os.environ.get("PEAR_EXP_TIMESTAMP") or run_timestamp
         output_root = output_root / f"exp_{_safe_slug(exp_timestamp)}"
     output_root.mkdir(parents=True, exist_ok=True)
 
@@ -164,7 +164,7 @@ def setup_run_logging(
         stream_handler.setFormatter(formatter)
         root.addHandler(stream_handler)
 
-    logging.getLogger("armad").info("Run directory: %s", run_dir)
+    logging.getLogger("pear").info("Run directory: %s", run_dir)
     return paths
 
 
@@ -174,6 +174,6 @@ def get_logger(name: str) -> logging.Logger:
     All package-internal loggers use the ``<module>`` namespace so that
     the user can adjust verbosity for a single module if needed.
     """
-    if not name.startswith("armad"):
+    if not name.startswith("pear"):
         name = f"{name}"
     return logging.getLogger(name)
