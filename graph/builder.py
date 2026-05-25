@@ -1,4 +1,4 @@
-"""Compile the AR-MAD :class:`StateGraph`.
+"""Compile the PEAR :class:`StateGraph`.
 
 The graph topology is the same across every condition; the conditions differ
 *only* in what the topology scheduler produces, which is exactly the design
@@ -50,7 +50,7 @@ def _route_after_round_advance(state: MASState) -> str:
     return "sched_topology"
 
 
-def build_armad_graph(
+def build_pear_graph(
     llm: BaseLLM,
     *,
     judge_llm: Optional[BaseLLM] = None,

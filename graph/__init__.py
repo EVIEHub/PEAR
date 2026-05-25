@@ -1,5 +1,5 @@
 """LangGraph wiring layer."""
 
-from graph.builder import build_armad_graph
+from graph.builder import build_pear_graph
 
-__all__ = ["build_armad_graph"]
+__all__ = ["build_pear_graph"]
