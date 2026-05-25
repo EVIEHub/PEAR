@@ -24,8 +24,8 @@ Common environment overrides:
   VLLM_TARGET_GPUS=0              # useful for a single target
   PARALLEL_EXAMPLES=1
   CONFIG_PATH=configs/main_large.yaml
-  ARMAD_SEEDS="1 2 3"
-  ARMAD_PERM_SEEDS="10"
+  PEAR_SEEDS="1 2 3"
+  PEAR_PERM_SEEDS="10"
 
 Model-specific overrides still work, e.g.:
   QWEN_GPUS=0 QWEN_NUM_EXAMPLES=200 scripts/run_vllm.sh qwen7b
@@ -68,10 +68,10 @@ fi
 export PYTHON_BIN=${PYTHON_BIN:-.venv-vllm/bin/python}
 export VLLM_WORKER_MULTIPROC_METHOD=${VLLM_WORKER_MULTIPROC_METHOD:-spawn}
 export CONFIG_PATH=${CONFIG_PATH:-configs/main_large.yaml}
-export CONDITION_LABEL=${CONDITION_LABEL:-"cot, cot_sc, fixed_clique, fixed_star, fixed_chain, fixed_ring, random_k_regular, armad_full"}
-export ARMAD_EXP_TIMESTAMP=${ARMAD_EXP_TIMESTAMP:-$(TZ=Europe/London date +%Y%m%d%H%M%S)_${VLLM_EXP_SUFFIX:-$DEFAULT_SUFFIX}}
-export ARMAD_SEEDS=${ARMAD_SEEDS:-"1 2 3"}
-export ARMAD_PERM_SEEDS=${ARMAD_PERM_SEEDS:-"10"}
+export CONDITION_LABEL=${CONDITION_LABEL:-"cot, cot_sc, fixed_clique, fixed_star, fixed_chain, fixed_ring, random_k_regular, pear_full"}
+export PEAR_EXP_TIMESTAMP=${PEAR_EXP_TIMESTAMP:-$(TZ=Europe/London date +%Y%m%d%H%M%S)_${VLLM_EXP_SUFFIX:-$DEFAULT_SUFFIX}}
+export PEAR_SEEDS=${PEAR_SEEDS:-"1 2 3"}
+export PEAR_PERM_SEEDS=${PEAR_PERM_SEEDS:-"10"}
 
 source "${SCRIPT_DIR}/common.sh"
 
@@ -171,8 +171,8 @@ _run_target () {
   echo "Config            : ${CONFIG_PATH}"
   echo "Datasets          : ${DATASETS[*]}"
   echo "Examples/dataset  : ${examples}"
-  echo "Seeds             : ${ARMAD_SEEDS}"
-  echo "Perm seeds        : ${ARMAD_PERM_SEEDS}"
+  echo "Seeds             : ${PEAR_SEEDS}"
+  echo "Perm seeds        : ${PEAR_PERM_SEEDS}"
   echo "Parallel examples : ${PARALLEL_EXAMPLES:-1}"
   echo "Output dir        : ${EXP_DIR}"
   echo "========================================"
