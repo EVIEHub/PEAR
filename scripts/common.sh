@@ -36,25 +36,25 @@ declare -A N_EX=(
 # ExpPlan_v3 first-pass sweep conditions are configured in configs/default.yaml.
 # The shell loop sweeps only model x dataset; condition names are stored inside
 # each run's results and transcripts, not in the folder name.
-CONDITION_LABEL=${CONDITION_LABEL:-"cot, cot_sc, fixed_clique, armad_full"}
+CONDITION_LABEL=${CONDITION_LABEL:-"cot, cot_sc, fixed_clique, pear_full"}
 CONFIG_PATH=${CONFIG_PATH:-configs/default.yaml}
-export ARMAD_EXP_TIMESTAMP=${ARMAD_EXP_TIMESTAMP:-$(date +%Y%m%d%H%M%S)}
-EXP_DIR=${EXP_DIR:-outputs/exp_${ARMAD_EXP_TIMESTAMP}}
-LOG_DIR=${LOG_DIR:-logs/exp_${ARMAD_EXP_TIMESTAMP}}
+export PEAR_EXP_TIMESTAMP=${PEAR_EXP_TIMESTAMP:-$(date +%Y%m%d%H%M%S)}
+EXP_DIR=${EXP_DIR:-outputs/exp_${PEAR_EXP_TIMESTAMP}}
+LOG_DIR=${LOG_DIR:-logs/exp_${PEAR_EXP_TIMESTAMP}}
 
 mkdir -p "$EXP_DIR"
 mkdir -p "$LOG_DIR"
 
 # Replication
-# ARMAD_SEEDS and ARMAD_PERM_SEEDS are space-separated lists.
+# PEAR_SEEDS and PEAR_PERM_SEEDS are space-separated lists.
 # Total runs per condition = examples x len(SEEDS) x len(PERMS).
-if [[ -n "${ARMAD_SEEDS:-}" ]]; then
-  read -r -a SEEDS <<< "$ARMAD_SEEDS"
+if [[ -n "${PEAR_SEEDS:-}" ]]; then
+  read -r -a SEEDS <<< "$PEAR_SEEDS"
 else
   SEEDS=(0)
 fi
-if [[ -n "${ARMAD_PERM_SEEDS:-}" ]]; then
-  read -r -a PERMS <<< "$ARMAD_PERM_SEEDS"
+if [[ -n "${PEAR_PERM_SEEDS:-}" ]]; then
+  read -r -a PERMS <<< "$PEAR_PERM_SEEDS"
 else
   PERMS=(10)
 fi

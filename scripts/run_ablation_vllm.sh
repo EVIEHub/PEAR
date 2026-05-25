@@ -5,7 +5,7 @@ set -euo pipefail
 export PYTHON_BIN=${PYTHON_BIN:-.venv-vllm/bin/python}
 export VLLM_WORKER_MULTIPROC_METHOD=${VLLM_WORKER_MULTIPROC_METHOD:-spawn}
 export CONFIG_PATH=${CONFIG_PATH:-configs/ablation.yaml}
-export CONDITION_LABEL=${CONDITION_LABEL:-"armad_targeted_cross, armad_influence, armad_low_confidence, armad_targeted_influence, armad_targeted_low_confidence, armad_influence_low_confidence, armad_full"}
+export CONDITION_LABEL=${CONDITION_LABEL:-"pear_targeted_cross, pear_influence, pear_low_confidence, pear_targeted_influence, pear_targeted_low_confidence, pear_influence_low_confidence, pear_full"}
 
 source "$(dirname "$0")/common.sh"
 
@@ -52,7 +52,7 @@ run_llama () {
 
 echo ""
 echo "========================================"
-echo "AR-MAD ABLATION vLLM RUN"
+echo "PEAR ABLATION vLLM RUN"
 echo "Config            : ${CONFIG_PATH}"
 echo "Target            : ${TARGET}"
 echo "Models            : gemma-3-12b-vllm, llama-3.1-8b-vllm, qwen2.5-14b-vllm"
@@ -86,6 +86,6 @@ esac
 
 echo ""
 echo "========================================"
-echo "AR-MAD ABLATION vLLM DONE"
+echo "PEAR ABLATION vLLM DONE"
 echo "========================================"
 echo ""

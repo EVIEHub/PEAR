@@ -5,8 +5,8 @@ set -euo pipefail
 export PYTHON_BIN=${PYTHON_BIN:-.venv-vllm/bin/python}
 export VLLM_WORKER_MULTIPROC_METHOD=${VLLM_WORKER_MULTIPROC_METHOD:-spawn}
 export CONFIG_PATH=${CONFIG_PATH:-configs/main_large.yaml}
-export CONDITION_LABEL=${CONDITION_LABEL:-"cot, cot_sc, fixed_clique, fixed_star, fixed_chain, fixed_ring, random_k_regular, armad_full"}
-export ARMAD_EXP_TIMESTAMP=${ARMAD_EXP_TIMESTAMP:-$(TZ=Europe/London date +%Y%m%d%H%M%S)_main}
+export CONDITION_LABEL=${CONDITION_LABEL:-"cot, cot_sc, fixed_clique, fixed_star, fixed_chain, fixed_ring, random_k_regular, pear_full"}
+export PEAR_EXP_TIMESTAMP=${PEAR_EXP_TIMESTAMP:-$(TZ=Europe/London date +%Y%m%d%H%M%S)_main}
 
 source "$(dirname "$0")/common.sh"
 
@@ -58,7 +58,7 @@ run_llama () {
 
 echo ""
 echo "========================================"
-echo "AR-MAD MAIN LARGE vLLM RUN"
+echo "PEAR MAIN LARGE vLLM RUN"
 echo "Config            : ${CONFIG_PATH}"
 echo "Target            : ${TARGET}"
 echo "Datasets          : ${DATASETS[*]}"
@@ -92,6 +92,6 @@ esac
 
 echo ""
 echo "========================================"
-echo "AR-MAD MAIN LARGE vLLM DONE"
+echo "PEAR MAIN LARGE vLLM DONE"
 echo "========================================"
 echo ""

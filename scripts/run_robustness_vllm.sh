@@ -4,8 +4,8 @@ set -euo pipefail
 
 export PYTHON_BIN=${PYTHON_BIN:-.venv-vllm/bin/python}
 export VLLM_WORKER_MULTIPROC_METHOD=${VLLM_WORKER_MULTIPROC_METHOD:-spawn}
-export ARMAD_EXP_TIMESTAMP=${ARMAD_EXP_TIMESTAMP:-$(TZ=Europe/London date +%Y%m%d%H%M%S)_robustness}
-export CONDITION_LABEL=${ROBUSTNESS_CONDITION_LABEL:-"fixed_clique, fixed_star, fixed_chain, fixed_ring, armad_full"}
+export PEAR_EXP_TIMESTAMP=${PEAR_EXP_TIMESTAMP:-$(TZ=Europe/London date +%Y%m%d%H%M%S)_robustness}
+export CONDITION_LABEL=${ROBUSTNESS_CONDITION_LABEL:-"fixed_clique, fixed_star, fixed_chain, fixed_ring, pear_full"}
 
 source "$(dirname "$0")/common.sh"
 
@@ -77,7 +77,7 @@ run_target_for_scenario () {
   export CONFIG_PATH=$(scenario_config "$scenario")
   echo ""
   echo "========================================"
-  echo "AR-MAD ROBUSTNESS vLLM RUN"
+  echo "PEAR ROBUSTNESS vLLM RUN"
   echo "Scenario          : ${scenario}"
   echo "Config            : ${CONFIG_PATH}"
   echo "Target            : ${TARGET}"
@@ -115,6 +115,6 @@ fi
 
 echo ""
 echo "========================================"
-echo "AR-MAD ROBUSTNESS vLLM DONE"
+echo "PEAR ROBUSTNESS vLLM DONE"
 echo "========================================"
 echo ""

@@ -4,8 +4,8 @@ set -euo pipefail
 
 export PYTHON_BIN=${PYTHON_BIN:-.venv-vllm/bin/python}
 export CONFIG_PATH=${CONFIG_PATH:-configs/main_large.yaml}
-export CONDITION_LABEL=${CONDITION_LABEL:-"cot, cot_sc, fixed_clique, fixed_star, fixed_chain, fixed_ring, random_k_regular, armad_full"}
-export ARMAD_EXP_TIMESTAMP=${ARMAD_EXP_TIMESTAMP:-$(TZ=Europe/London date +%Y%m%d%H%M%S)_closed_main}
+export CONDITION_LABEL=${CONDITION_LABEL:-"cot, cot_sc, fixed_clique, fixed_star, fixed_chain, fixed_ring, random_k_regular, pear_full"}
+export PEAR_EXP_TIMESTAMP=${PEAR_EXP_TIMESTAMP:-$(TZ=Europe/London date +%Y%m%d%H%M%S)_closed_main}
 
 source "$(dirname "$0")/common.sh"
 
@@ -40,7 +40,7 @@ run_claude_haiku () {
 
 echo ""
 echo "========================================"
-echo "AR-MAD CLOSED-SOURCE MAIN RUN"
+echo "PEAR CLOSED-SOURCE MAIN RUN"
 echo "Config            : ${CONFIG_PATH}"
 echo "Target            : ${TARGET}"
 echo "Datasets          : ${DATASETS[*]}"
@@ -72,6 +72,6 @@ esac
 
 echo ""
 echo "========================================"
-echo "AR-MAD CLOSED-SOURCE MAIN DONE"
+echo "PEAR CLOSED-SOURCE MAIN DONE"
 echo "========================================"
 echo ""

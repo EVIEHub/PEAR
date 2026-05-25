@@ -6,9 +6,9 @@ export PYTHON_BIN=${PYTHON_BIN:-.venv-vllm/bin/python}
 export VLLM_WORKER_MULTIPROC_METHOD=${VLLM_WORKER_MULTIPROC_METHOD:-spawn}
 export CONFIG_PATH=${CONFIG_PATH:-configs/random_k_regular_baseline.yaml}
 export CONDITION_LABEL=${CONDITION_LABEL:-"random_k_regular"}
-export ARMAD_EXP_TIMESTAMP=${ARMAD_EXP_TIMESTAMP:-$(TZ=Europe/London date +%Y%m%d%H%M%S)_random_k_regular}
-export ARMAD_SEEDS=${ARMAD_SEEDS:-"1"}
-export ARMAD_PERM_SEEDS=${ARMAD_PERM_SEEDS:-"10"}
+export PEAR_EXP_TIMESTAMP=${PEAR_EXP_TIMESTAMP:-$(TZ=Europe/London date +%Y%m%d%H%M%S)_random_k_regular}
+export PEAR_SEEDS=${PEAR_SEEDS:-"1"}
+export PEAR_PERM_SEEDS=${PEAR_PERM_SEEDS:-"10"}
 
 source "$(dirname "$0")/common.sh"
 
@@ -33,8 +33,8 @@ echo "RANDOM K-REGULAR BASELINE RUN"
 echo "Config: ${CONFIG_PATH}"
 echo "Datasets: ${DATASETS[*]}"
 echo "Examples per dataset: ${RANDOM_K_NUM_EXAMPLES}"
-echo "Seeds: ${ARMAD_SEEDS}"
-echo "Perm seeds: ${ARMAD_PERM_SEEDS}"
+echo "Seeds: ${PEAR_SEEDS}"
+echo "Perm seeds: ${PEAR_PERM_SEEDS}"
 echo "Output dir: ${EXP_DIR}"
 echo "========================================"
 echo ""
