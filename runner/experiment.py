@@ -134,7 +134,7 @@ class RunResult:
     summary: Dict[str, Any] = field(default_factory=dict)
 
 
-# Two-phase AR-MAD execution helpers
+# Two-phase PEAR execution helpers
 def _extract_json_object(text: str) -> Dict[str, Any]:
     """Best-effort parse of a model JSON object."""
     if not text:
@@ -330,21 +330,21 @@ def _routing_weights(mode: str, debate_cfg: Mapping[str, Any]) -> tuple[float, f
     )
     if mode in {"fixed", "cot", "cot_sc", "mad", "random_k_regular"}:
         return 0.0, 0.0, 0.0
-    if mode == "armad_uniform":
+    if mode == "pear_uniform":
         return 0.0, 0.0, 0.0
-    if mode in {"armad_targeted_cross", "targeted_cross"}:
+    if mode in {"pear_targeted_cross", "targeted_cross"}:
         return default_targeted_cross, 0.0, 0.0
-    if mode in {"armad_influence", "influence"}:
+    if mode in {"pear_influence", "influence"}:
         return 0.0, default_inf, 0.0
-    if mode in {"armad_low_confidence", "low_confidence"}:
+    if mode in {"pear_low_confidence", "low_confidence"}:
         return 0.0, 0.0, default_low_conf
-    if mode in {"armad_targeted_influence", "targeted_influence"}:
+    if mode in {"pear_targeted_influence", "targeted_influence"}:
         return default_targeted_cross, default_inf, 0.0
-    if mode in {"armad_targeted_low_confidence", "targeted_low_confidence"}:
+    if mode in {"pear_targeted_low_confidence", "targeted_low_confidence"}:
         return default_targeted_cross, 0.0, default_low_conf
-    if mode in {"armad_influence_low_confidence", "influence_low_confidence"}:
+    if mode in {"pear_influence_low_confidence", "influence_low_confidence"}:
         return 0.0, default_inf, default_low_conf
-    if mode in {"armad_full", "state_aware"}:
+    if mode in {"pear_full", "state_aware"}:
         return default_targeted_cross, default_inf, default_low_conf
     raise ValueError(f"Unknown debate mode: {mode!r}")
 
@@ -692,7 +692,7 @@ def _select_topology(
             "k_regular_degree": degree,
         }
         return list(range(1, n_agents + 1)), topo, info
-    elif mode == "armad_subgroup":
+    elif mode == "pear_subgroup":
         perm = subgroup_permutation(n_agents, perm_rng)
         info = {"candidate_count": 1, "selected_score": 0.0}
     else:
@@ -704,7 +704,7 @@ def _select_topology(
             i: float(current_answers[i].get("confidence", 0))
             for i in range(1, n_agents + 1)
         }
-        if mode == "armad_uniform":
+        if mode == "pear_uniform":
             perm = uniform_permutation(n_agents, perm_rng)
             info = {"candidate_count": 1, "selected_score": 0.0}
         else:
@@ -815,8 +815,8 @@ def run_one(
     perm_seed: int,
     judge_llm: Optional[BaseLLM] = None,
 ) -> Dict[str, Any]:
-    """Run one example through the ExpPlan_v3 two-phase AR-MAD loop."""
-    mode = str(debate_cfg.get("mode", "armad_full"))
+    """Run one example through the ExpPlan_v3 two-phase PEAR loop."""
+    mode = str(debate_cfg.get("mode", "pear_full"))
     n_agents = int(debate_cfg.get("n_agents", 6))
     if mode == "cot":
         n_agents = 1
@@ -1470,7 +1470,7 @@ def run_experiment(config: ExperimentConfig) -> List[RunResult]:
     log_cfg = cfg.get("logging", {})
     paths = setup_run_logging(
         paths_root,
-        tag=config.run_tag or cfg.get("agents", {}).get("model", "armad"),
+        tag=config.run_tag or cfg.get("agents", {}).get("model", "pear"),
         level=log_cfg.get("level", "INFO"),
         console=bool(log_cfg.get("console", True)),
     )
