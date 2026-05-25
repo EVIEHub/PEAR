@@ -35,7 +35,7 @@ def agent_view(
     Note that because ``topo`` is re-evaluated per round, an agent that was
     in your in-neighbor set last round but isn't this round will become
     invisible to you again -- this is the intended behaviour, and is what
-    makes AR-MAD's per-round shuffle structurally meaningful.
+    makes PEAR's per-round shuffle structurally meaningful.
 
     Parameters
     ----------

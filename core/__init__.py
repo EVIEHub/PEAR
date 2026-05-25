@@ -1,4 +1,4 @@
-"""Core data structures and pure graph utilities for AR-MAD.
+"""Core data structures and pure graph utilities for PEAR.
 
 This subpackage contains *only* deterministic, side-effect-free building
 blocks: the shared LangGraph state schema, the topology factory, the

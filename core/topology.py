@@ -200,7 +200,7 @@ def score_state_permutation(
     targeted_cross_target_confidence_max: float = 3.0,
     normalize_terms: bool = True,
 ) -> Tuple[float, Dict[str, float]]:
-    """Score one candidate permutation under the targeted AR-MAD objective.
+    """Score one candidate permutation under the targeted PEAR objective.
 
     The code uses source out-degree as structural exposure because the local
     adjacency convention stores incoming neighbors by target. This is the
@@ -371,7 +371,7 @@ def edge_dropout(topo: Adjacency, drop_p: float, rng: random.Random) -> Adjacenc
 
     Used as a mechanism-isolation control (ExpPlan.md section 3.3): preserves
     expected graph sparsity but breaks the *permutation averaging* effect that
-    is hypothesised to drive AR-MAD's gains.
+    is hypothesised to drive PEAR's gains.
     """
     if not 0.0 <= drop_p <= 1.0:
         raise ValueError(f"drop_p must be in [0, 1], got {drop_p}")

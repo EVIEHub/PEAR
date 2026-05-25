@@ -1,4 +1,4 @@
-"""Shared state schema for the AR-MAD LangGraph.
+"""Shared state schema for the PEAR LangGraph.
 
 The graph is a single ``StateGraph`` whose nodes mutate a single dictionary
 that conforms to ``MASState``. Every channel that nodes read or write must
@@ -15,8 +15,8 @@ from typing import Any, Dict, List, Literal, Optional, TypedDict
 # Type aliases for the small finite enumerations used in the graph.
 Mode = Literal[
     "fixed",            # No shuffling, identity permutation.
-    "armad_uniform",     # Per-step uniform permutation over S_n.
-    "armad_subgroup",    # Permutation only within blocks (team-preserving).
+    "pear_uniform",     # Per-step uniform permutation over S_n.
+    "pear_subgroup",    # Permutation only within blocks (team-preserving).
     "edge_dropout",     # Mechanism-isolation control: drop random edges.
     "random_speaking",  # Mechanism-isolation control: schedule noise only.
     "role_shuffle",     # Mechanism-isolation control: roles move, edges don't.
@@ -37,7 +37,7 @@ class Message(TypedDict):
 
 
 class MASState(TypedDict, total=False):
-    """LangGraph state shared by every node in the AR-MAD graph.
+    """LangGraph state shared by every node in the PEAR graph.
 
     All keys are optional in the type sense (``total=False``) because nodes
     populate them incrementally; in practice ``init`` is responsible for
