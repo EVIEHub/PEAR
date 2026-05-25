@@ -1,4 +1,4 @@
-"""LangGraph node functions for the AR-MAD debate.
+"""LangGraph node functions for the PEAR debate.
 
 Every node takes a :class:`MASState` mapping and returns the (mutated) same
 mapping. Nodes are kept as free functions (rather than methods on a class)

@@ -84,16 +84,16 @@ def _select_perm(state: MASState) -> List[int]:
 
     if mode == "fixed":
         return list(range(1, n + 1))
-    if mode == "armad_uniform":
+    if mode == "pear_uniform":
         return uniform_permutation(n, rng)
-    if mode == "armad_subgroup":
+    if mode == "pear_subgroup":
         return subgroup_permutation(n, rng)
     if mode in {"edge_dropout", "random_speaking"}:
         # No permutation by construction.
         return list(range(1, n + 1))
     if mode == "role_shuffle":
         # Roles move but edges (in role-space) don't; this is functionally the
-        # same as armad_uniform from the visibility standpoint, but we keep it
+        # same as pear_uniform from the visibility standpoint, but we keep it
         # as a separate mode so trace logs can distinguish them clearly.
         return uniform_permutation(n, rng)
     raise ValueError(f"Unknown mode: {mode!r}")

@@ -30,7 +30,7 @@ def _render_messages(
     """Render the most recent ``window`` messages with [r<round> t<turn>] tags.
 
     The round/turn prefix lets the agent see *when* a message was uttered,
-    which matters under AR-MAD because the same speaker may have been visible
+    which matters under PEAR because the same speaker may have been visible
     in some previous round but not in the current one.
     """
     if not msgs:
@@ -56,7 +56,7 @@ def _build_topology_info(
     are currently in its in-neighbour set (whose messages it can read),
     and (c) which agents have it as an in-neighbour (so its forthcoming
     reply will be visible to them). Knowing this on the LLM side keeps
-    the agent honest about AR-MAD's per-round changing topology without
+    the agent honest about PEAR's per-round changing topology without
     leaking any additional content.
     """
     in_neigh = sorted(topo[agent_id - 1])
