@@ -1,4 +1,4 @@
-"""Abstract base class for AR-MAD model backends.
+"""Abstract base class for PEAR model backends.
 
 The whole experiment harness only ever calls a single method on a model:
 ``generate(prompt, *, max_tokens, temperature, system, agent_id)``. Sub-
@@ -6,7 +6,7 @@ classes are free to do whatever they like internally as long as they return a
 :class:`Generation` with the produced text and (optionally) token counts.
 
 This deliberate minimalism matches ExpPlan.md's "swap only the topology
-scheduler" principle: keep the LLM interface fixed across baselines and AR-MAD
+scheduler" principle: keep the LLM interface fixed across baselines and PEAR
 so that comparisons remain apples-to-apples.
 """
 
