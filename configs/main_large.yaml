@@ -2,7 +2,7 @@ extends: default.yaml
 
 # Main large-sample experiment.
 #
-# This keeps the primary baselines and adds fixed-topology controls so AR-MAD can
+# This keeps the primary baselines and adds fixed-topology controls so PEAR can
 # be compared against both dense and sparse static communication graphs.
 
 debate:
@@ -53,8 +53,8 @@ conditions:
       base_topology: k_regular
       k_regular_degree: 2
 
-  - name: armad_full
+  - name: pear_full
     debate:
-      mode: armad_full
+      mode: pear_full
       base_topology: k_regular
       k_regular_degree: 2

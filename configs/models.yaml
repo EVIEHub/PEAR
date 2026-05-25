@@ -1,7 +1,7 @@
 # Model registry.
 #
 # Each entry under "models" describes one LLM that the experiment runner can
-# instantiate via armad.models.factory.build_llm. The "provider" field selects
+# instantiate via pear.models.factory.build_llm. The "provider" field selects
 # the backend; everything else is forwarded as keyword arguments.
 #
 # Closed-source providers expect an API key in the .env file (see .env.example).

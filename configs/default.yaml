@@ -10,7 +10,7 @@ debate:
   rounds: 3                # Number of two-phase debate rounds (R).
   base_topology: k_regular # clique | k_regular | ring | star | chain
   k_regular_degree: 2      # Incoming critiques per agent for k_regular.
-  mode: armad_full          # cot | cot_sc | fixed | armad_full
+  mode: pear_full          # cot | cot_sc | fixed | pear_full
   agg_mode: majority_vote  # majority_vote | llm_judge
   max_tokens_per_call: 512
   mc_permutations: 100
@@ -48,9 +48,9 @@ conditions:
     debate:
       mode: fixed
       base_topology: clique
-  - name: armad_full
+  - name: pear_full
     debate:
-      mode: armad_full
+      mode: pear_full
       base_topology: k_regular
       k_regular_degree: 3
 

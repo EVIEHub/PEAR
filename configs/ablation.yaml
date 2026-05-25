@@ -1,6 +1,6 @@
 extends: default.yaml
 
-# Factorial routing ablation for AR-MAD.
+# Factorial routing ablation for PEAR.
 #
 # Factors:
 # - targeted_cross: route high-confidence dissenting sources to low-confidence targets.
@@ -9,12 +9,12 @@ extends: default.yaml
 #
 # Baselines:
 # - fixed_clique: previous strong dense-graph baseline.
-# - fixed_k_regular: same sparse base graph as AR-MAD, without per-round routing.
-# - armad_uniform: same sparse base graph with random per-round permutation,
+# - fixed_k_regular: same sparse base graph as PEAR, without per-round routing.
+# - pear_uniform: same sparse base graph with random per-round permutation,
 #   but no state-aware objective.
 
 debate:
-  mode: armad_full
+  mode: pear_full
   base_topology: k_regular
   k_regular_degree: 3
   alpha_targeted_cross: 0.5
@@ -27,44 +27,44 @@ debate:
 
 conditions:
 
-  - name: armad_targeted_cross
+  - name: pear_targeted_cross
     debate:
-      mode: armad_targeted_cross
+      mode: pear_targeted_cross
       base_topology: k_regular
       k_regular_degree: 3
 
-  - name: armad_influence
+  - name: pear_influence
     debate:
-      mode: armad_influence
+      mode: pear_influence
       base_topology: k_regular
       k_regular_degree: 3
 
-  - name: armad_low_confidence
+  - name: pear_low_confidence
     debate:
-      mode: armad_low_confidence
+      mode: pear_low_confidence
       base_topology: k_regular
       k_regular_degree: 3
 
-  - name: armad_targeted_influence
+  - name: pear_targeted_influence
     debate:
-      mode: armad_targeted_influence
+      mode: pear_targeted_influence
       base_topology: k_regular
       k_regular_degree: 3
 
-  - name: armad_targeted_low_confidence
+  - name: pear_targeted_low_confidence
     debate:
-      mode: armad_targeted_low_confidence
+      mode: pear_targeted_low_confidence
       base_topology: k_regular
       k_regular_degree: 3
 
-  - name: armad_influence_low_confidence
+  - name: pear_influence_low_confidence
     debate:
-      mode: armad_influence_low_confidence
+      mode: pear_influence_low_confidence
       base_topology: k_regular
       k_regular_degree: 3
 
-  - name: armad_full
+  - name: pear_full
     debate:
-      mode: armad_full
+      mode: pear_full
       base_topology: k_regular
       k_regular_degree: 3
