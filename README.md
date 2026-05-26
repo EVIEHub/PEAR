@@ -311,6 +311,18 @@ Analysis scripts live in `analysis/` and generated figures/reports should be wri
 
 ---
 
+
+
+## Citation
+
+```bibtex
+@article{pear2026,
+  title={PEAR: Permutation-Equivariant Adaptive Routing Multi-Agent Debate},
+  author={Feng, Yang and Xu, Ziwei and Hu, Xia and He, Fengxiang},
+  year={2026}
+}
+```
+
 ## License
 
 See `LICENSE`.
